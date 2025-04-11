@@ -1,13 +1,32 @@
+/* index.css */
+
+/* Đặt chiều cao full cho body */
+html,
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Custom background gradient (nếu bạn muốn dùng thay vì inline style) */
+body {
+    background: linear-gradient(to bottom right, #cce4f6, #bbc5f5);
 }
+
+/* Tạo một class .cursor-pointer nếu bạn hay dùng */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Class bo góc mạnh tay hơn Bootstrap */
+.rounded-super {
+    border-radius: 2rem;
+}
+
+/* Tuỳ chỉnh font-size, line-height... */
+.text-xxl {
+    font-size: 2rem;
+    line-height: 2.5rem;
+}
+
+/* ...bạn có thể viết nhiều class tuỳ nhu cầu */
