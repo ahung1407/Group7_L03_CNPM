@@ -1,34 +1,17 @@
 import React from 'react';
-import rooms from './rooms';
-import { Lock, Clock, Check } from 'lucide-react';
+import { Lock, Check } from 'lucide-react'; // Icon
 
-function RoomList({ onSelectRoom }) {
-    // Map trạng thái phòng sang class màu của Bootstrap
-    const getColorClass = (status) => {
-        switch (status) {
-            case 'available':
-                return 'bg-success';
-            case 'locked':
-                return 'bg-danger';
-            case 'pending':
-                return 'bg-warning';
-            default:
-                return 'bg-secondary';
-        }
+function RoomList({ rooms, onSelectRoom }) {
+    // Xác định màu dựa trên danh sách slot
+    const getColorClass = (slots) => {
+        const hasAvailable = slots.some(slot => slot.status === 'Available');
+        return hasAvailable ? 'bg-success' : 'bg-danger';
     };
 
-    // Icon lucide-react – có thể dùng size thay vì className
-    const getIcon = (status) => {
-        switch (status) {
-            case 'available':
-                return <Check size={20} />;
-            case 'locked':
-                return <Lock size={20} />;
-            case 'pending':
-                return <Clock size={20} />;
-            default:
-                return null;
-        }
+    // Xác định icon
+    const getIcon = (slots) => {
+        const hasAvailable = slots.some(slot => slot.status === 'Available');
+        return hasAvailable ? <Check size={20} /> : <Lock size={20} />;
     };
 
     return (
@@ -42,10 +25,10 @@ function RoomList({ onSelectRoom }) {
                     <div className="col" key={room.id}>
                         <button
                             className={`w-100 rounded p-4 d-flex flex-column justify-content-center align-items-center text-white fw-semibold fs-5 border-0 ${getColorClass(
-                                room.status
+                                room.slots
                             )}`}
                             onClick={() => onSelectRoom(room)}
-                            disabled={room.status === 'locked'}
+                            //disabled={!room.slots.some(slot => slot.status === 'Available')}
                             style={{
                                 transition: 'transform 0.2s',
                             }}
@@ -53,7 +36,7 @@ function RoomList({ onSelectRoom }) {
                             onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                         >
                             {room.name}
-                            <div className="mt-2">{getIcon(room.status)}</div>
+                            <div className="mt-2">{getIcon(room.slots)}</div>
                         </button>
                     </div>
                 ))}
