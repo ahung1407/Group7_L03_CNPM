@@ -18,176 +18,178 @@ mongoose
 const Room = require('./models/Room');
 
 // API để khởi tạo dữ liệu
-app.post('/api/rooms/init', async (req, res) => {
-    try {
-        const initialRooms = [
-            {
-                id: 1,
-                name: 'Room1',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                ],
-            },
-            {
-                id: 2,
-                name: 'Room2',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                ],
-            },
-            {
-                id: 3,
-                name: 'Room3',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Available' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                ],
-            },
-            {
-                id: 4,
-                name: 'Room4',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
-                ],
-            },
-            {
-                id: 5,
-                name: 'Room5',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                ],
-            },
-            {
-                id: 6,
-                name: 'Room6',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                ],
-            },
-            {
-                id: 7,
-                name: 'Room7',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                ],
-            },
-            {
-                id: 8,
-                name: 'Room8',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Available' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                ],
-            },
-            {
-                id: 9,
-                name: 'Room9',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
-                ],
-            },
-            {
-                id: 10,
-                name: 'Room10',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                ],
-            },
-            {
-                id: 11,
-                name: 'Room11',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                ],
-            },
-            {
-                id: 12,
-                name: 'Room12',
-                slots: [
-                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                    { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
-                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                ],
-            },
-        ];
+if (process.env.INIT_DATA === 'true') {
+    app.post('/api/rooms/init', async (req, res) => {
+        try {
+            const initialRooms = [
+                {
+                    id: 1,
+                    name: 'H6-001',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                    ],
+                },
+                {
+                    id: 2,
+                    name: 'H6-002',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                    ],
+                },
+                {
+                    id: 3,
+                    name: 'H6-003',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Available' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                    ],
+                },
+                {
+                    id: 4,
+                    name: 'H6-004',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
+                    ],
+                },
+                {
+                    id: 5,
+                    name: 'H6-005',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                    ],
+                },
+                {
+                    id: 6,
+                    name: 'H6-006',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                    ],
+                },
+                {
+                    id: 7,
+                    name: 'H6-007',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                    ],
+                },
+                {
+                    id: 8,
+                    name: 'H6-008',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Available' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                    ],
+                },
+                {
+                    id: 9,
+                    name: 'H6-009',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
+                    ],
+                },
+                {
+                    id: 10,
+                    name: 'H6-010',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                    ],
+                },
+                {
+                    id: 11,
+                    name: 'H6-011',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                    ],
+                },
+                {
+                    id: 12,
+                    name: 'H6-012',
+                    slots: [
+                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                        { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
+                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                    ],
+                },
+            ];
 
-        await Room.deleteMany({});
-        await Room.insertMany(initialRooms);
+            await Room.deleteMany({});
+            await Room.insertMany(initialRooms);
 
-        res.status(201).json({ message: 'Rooms initialized successfully' });
-    } catch (error) {
-        console.error('Error in /api/rooms/init:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
+            res.status(201).json({ message: 'Rooms initialized successfully' });
+        } catch (error) {
+            console.error('Error in /api/rooms/init:', error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+}
 
 // Các API khác
 app.get('/api/rooms', async (req, res) => {

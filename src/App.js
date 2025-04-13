@@ -34,12 +34,12 @@ function App() {
   return (
     <div className="d-flex min-vh-100" style={{ background: 'linear-gradient(to bottom right, #cce4f6, #bbc5f5)' }}>
       <aside className="bg-white border-end shadow p-4" style={{ width: '16rem', backdropFilter: 'blur(6px)', opacity: 0.9 }}>
-        <h1 className="fs-2 fw-bolder text-primary mb-4">C7 Admin</h1>
+        <h1 className="fs-2 fw-bolder text-primary mb-4">Admin</h1>
         <nav className="d-flex flex-column gap-3">
           <div className="text-primary fw-medium cursor-pointer">Dashboard</div>
-          <div className="text-secondary cursor-pointer">Rooms</div>
+          {/*<div className="text-secondary cursor-pointer">Rooms</div>
           <div className="text-secondary cursor-pointer">Statistics</div>
-          <div className="text-secondary cursor-pointer">Settings</div>
+          <div className="text-secondary cursor-pointer">Settings</div>*/}
         </nav>
       </aside>
       <main className="flex-grow-1 px-4 py-4 overflow-auto">

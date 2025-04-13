@@ -1,72 +1,28 @@
 import React, { useState } from 'react';
 
-function RoomDetail({ room, onBack }) {
-    const [timeSlots, setTimeSlots] = useState([
-        { id: 1, range: '7:00 - 9:00', status: 'Available', description: 'Khung giờ sáng' },
-        { id: 2, range: '9:00 - 11:00', status: 'Reserved', description: 'Đã có lịch họp nhóm' },
-        { id: 3, range: '11:00 - 13:00', status: 'Available', description: '' },
-        { id: 4, range: '13:00 - 15:00', status: 'Available', description: '' },
-        { id: 5, range: '15:00 - 17:00', status: 'Reserved', description: '' },
-        { id: 6, range: '17:00 - 19:00', status: 'Available', description: '' },
-        { id: 7, range: '19:00 - 21:00', status: 'Available', description: '' },
-    ]);
-
+function RoomDetail({ room, onBack, onUpdateTimeSlots }) {
+    const [timeSlots, setTimeSlots] = useState(room.slots);
     const [selectedSlot, setSelectedSlot] = useState(null);
 
-    // Chọn slot khi bấm
     const handleClickSlot = (slot) => {
         setSelectedSlot(slot);
     };
 
-    // Khi bấm "Reserve" -> chuyển slot được chọn sang "Reserved" (màu đỏ nhạt)
-    const handleReserve = () => {
+    const updateSlotStatus = (newStatus) => {
         if (!selectedSlot) return;
 
         const updatedSlots = timeSlots.map((slot) =>
-            slot.id === selectedSlot.id
-                ? { ...slot, status: 'Reserved' }
-                : slot
+            slot.id === selectedSlot.id ? { ...slot, status: newStatus } : slot
         );
 
         setTimeSlots(updatedSlots);
-        setSelectedSlot({
-            ...selectedSlot,
-            status: 'Reserved',
-        });
+        setSelectedSlot({ ...selectedSlot, status: newStatus });
+
+        onUpdateTimeSlots(room.id, updatedSlots);
     };
 
-    // Khi bấm "Cancel" -> chuyển slot được chọn sang "Available" (màu xanh nhạt)
-    const handleCancel = () => {
-        if (!selectedSlot) return;
-
-        const updatedSlots = timeSlots.map((slot) =>
-            slot.id === selectedSlot.id
-                ? { ...slot, status: 'Canceled' }
-                : slot
-        );
-
-        setTimeSlots(updatedSlots);
-        setSelectedSlot({
-            ...selectedSlot,
-            status: 'Available',
-        });
-    };
-
-    const handleMaintain = () => {
-        if (!selectedSlot) return;
-
-        const updatedSlots = timeSlots.map((slot) =>
-            slot.id === selectedSlot.id
-                ? { ...slot, status: 'Maintained' }
-                : slot
-        );
-
-        setTimeSlots(updatedSlots);
-        setSelectedSlot({
-            ...selectedSlot,
-            status: 'Maintained',
-        });
-    };
+    const handleReserve = () => updateSlotStatus('Reserved');
+    const handleCancel = () => updateSlotStatus('Available');
 
     return (
         <div>
@@ -86,7 +42,7 @@ function RoomDetail({ room, onBack }) {
             </div>
 
             <div className="row g-4">
-                {/* Cột trái: danh sách time slots */}
+                {/* Danh sách khung giờ */}
                 <div className="col-4">
                     {timeSlots.map((slot) => {
                         const isSelected = selectedSlot && selectedSlot.id === slot.id;
@@ -94,7 +50,7 @@ function RoomDetail({ room, onBack }) {
                         let bgColor = '#f8f9fa';
                         if (slot.status === 'Reserved') bgColor = '#ffd6d6';
                         else if (slot.status === 'Available') bgColor = '#d1e7dd';
-                        else if (slot.status === 'Maintained') bgColor = '#e2e3e5'; // maintained: xám nhạt
+                        else if (slot.status === 'Maintained') bgColor = '#e2e3e5';
 
                         const border = isSelected ? '2px solid #f39c12' : '1px solid #ccc';
                         if (isSelected) bgColor = '#fffbe6';
@@ -111,18 +67,27 @@ function RoomDetail({ room, onBack }) {
                         );
                     })}
 
-                    {/* Nút Maintained */}
-                    <button
-                        className="btn btn-warning fw-semibold mt-4"
-                        style={{ width: '100%' }}
-                        onClick={handleMaintain}
-                        disabled={!selectedSlot || selectedSlot.status === 'Maintained'}
-                    >
-                        Maintained
-                    </button>
+                    {/* Checkbox Maintained */}
+                    <div className="form-check mt-4">
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="maintainCheckbox"
+                            checked={selectedSlot?.status === 'Maintained'}
+                            onChange={(e) => {
+                                if (!selectedSlot) return;
+                                const newStatus = e.target.checked ? 'Maintained' : 'Available';
+                                updateSlotStatus(newStatus);
+                            }}
+                            disabled={!selectedSlot}
+                        />
+                        <label className="form-check-label ms-2" htmlFor="maintainCheckbox">
+                            Maintained
+                        </label>
+                    </div>
                 </div>
 
-                {/* Cột phải: hiển thị detail slot, nút Reserve/Cancel */}
+                {/* Chi tiết + nút điều khiển */}
                 <div className="col-8 d-flex flex-column gap-3">
                     <div className="bg-light p-3 rounded shadow-sm">
                         <p className="mb-2 fw-medium">Room used for:</p>
