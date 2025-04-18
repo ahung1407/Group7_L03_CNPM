@@ -34,6 +34,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Available' },
                         { id: 7, range: '19:00 - 21:00', status: 'Available' },
                     ],
+                    description: 'Individual study'
                 },
                 {
                     id: 2,
@@ -47,6 +48,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
                         { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
                     ],
+                    description: 'Group study'
                 },
                 {
                     id: 3,
@@ -60,6 +62,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Available' },
                         { id: 7, range: '19:00 - 21:00', status: 'Available' },
                     ],
+                    description: 'Individual study'
                 },
                 {
                     id: 4,
@@ -73,6 +76,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
                         { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
                     ],
+                    description: '1-1 mentoring'
                 },
                 {
                     id: 5,
@@ -86,6 +90,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Available' },
                         { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
                     ],
+                    description: 'Individual study'
                 },
                 {
                     id: 6,
@@ -99,6 +104,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Available' },
                         { id: 7, range: '19:00 - 21:00', status: 'Available' },
                     ],
+                    description: 'Group study'
                 },
                 {
                     id: 7,
@@ -112,6 +118,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
                         { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
                     ],
+                    description: 'Individual study'
                 },
                 {
                     id: 8,
@@ -125,6 +132,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Available' },
                         { id: 7, range: '19:00 - 21:00', status: 'Available' },
                     ],
+                    description: 'Individual study'
                 },
                 {
                     id: 9,
@@ -138,6 +146,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
                         { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
                     ],
+                    description: 'Group study'
                 },
                 {
                     id: 10,
@@ -151,6 +160,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Available' },
                         { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
                     ],
+                    description: 'Individual study'
                 },
                 {
                     id: 11,
@@ -164,6 +174,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Available' },
                         { id: 7, range: '19:00 - 21:00', status: 'Available' },
                     ],
+                    description: '1-1 mentoring'
                 },
                 {
                     id: 12,
@@ -177,6 +188,7 @@ if (process.env.INIT_DATA === 'true') {
                         { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
                         { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
                     ],
+                    description: 'Individual study'
                 },
             ];
 

@@ -10,6 +10,7 @@ const roomSchema = new mongoose.Schema({
     id: Number,
     name: String,
     slots: [slotSchema],
+    description: String
 });
 
 module.exports = mongoose.model('Room', roomSchema);
