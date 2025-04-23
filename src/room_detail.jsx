@@ -83,43 +83,52 @@ function RoomDetail({ room, onBack, onUpdateTimeSlots }) {
 
                 {/* Slot Detail */}
                 <div className="md:col-span-2 flex flex-col gap-4">
-                    <div className="bg-white shadow rounded p-4">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm">
                         <div className="flex items-center gap-2">
-                            <h6 className="text-base font-bold text-gray-800 mb-0">Room used for:</h6>
-                            <p className="text-base text-gray-500">{room.description || 'No description'}</p>
+                            <h6 className="text-sm font-medium text-gray-900 mb-0">Room used for:</h6>
+                            <p className="text-sm text-gray-800">{room.description || 'No description'}</p>
                         </div>
                     </div>
 
-                    <div className="bg-white shadow rounded p-4">
-                        <h6 className="text-base font-bold text-gray-800 mb-1">Status:</h6>
-                        <p className="font-semibold">
-                            {selectedSlot ? (
-                                <span className={`px-3 py-1 rounded text-white text-sm ${selectedSlot.status === 'Available'
-                                    ? 'bg-green-500'
-                                    : selectedSlot.status === 'Reserved'
-                                        ? 'bg-red-500'
-                                        : 'bg-gray-500'
-                                    }`}>
-                                    {selectedSlot.status}
-                                </span>
-                            ) : (
-                                <span className="text-gray-500 text-base">Select slot</span>
-                            )}
-                        </p>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm">
+                        <div className="flex items-center gap-2">
+                            <h6 className="text-sm font-medium text-gray-900 mb-0">Status:</h6>
+                            <p className="font-semibold">
+                                {selectedSlot ? (
+                                    <span className={`px-3 py-1 rounded text-white text-sm ${selectedSlot.status === 'Available'
+                                        ? 'bg-green-500'
+                                        : selectedSlot.status === 'Reserved'
+                                            ? 'bg-red-500'
+                                            : 'bg-gray-500'
+                                        }`}>
+                                        {selectedSlot.status}
+                                    </span>
+                                ) : (
+                                    <p className="text-gray-500 text-sm ">Select slot</p>
+                                )}
+                            </p>
+                        </div>
                     </div>
 
                     {selectedSlot?.status === 'Reserved' && (
-                        <div className="bg-white shadow rounded p-4">
-                            <div className="flex items-center gap-2">
-                                <h6 className="text-base font-bold text-gray-800 mb-0">Name:</h6>
-                                <p className="text-base text-gray-500">{selectedSlot.book || 'No name provided'}</p>
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm">
+                            <h6 className="text-sm font-medium text-gray-700 mb-2">Booking Details</h6>
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500">Name:</span>
+                                    <span className="text-sm text-gray-800">{selectedSlot.book || 'No name provided'}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500">Student ID:</span>
+                                    <span className="text-sm text-gray-800">{selectedSlot.book || 'No ID provided'}</span>
+                                </div>
                             </div>
                         </div>
                     )}
 
                     <div className="text-right">
                         <button
-                            className="border border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-50"
+                            className="border border-red-500 text-red-500 hover:bg-red-100 transition px-4 py-2 rounded-lg text-sm"
                             onClick={handleCancel}
                             disabled={!selectedSlot || selectedSlot.status === 'Maintained'}
                         >
