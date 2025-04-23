@@ -6,78 +6,81 @@ function RoomList({ rooms, onSelectRoom }) {
     const [filterType, setFilterType] = useState('All');
 
     const getColorClass = (slots) => {
-        const hasAvailable = slots.some(slot => slot.status === 'Available');
-        return hasAvailable ? 'border-success' : 'border-danger';
+        const hasAvailable = slots.some((slot) => slot.status === 'Available');
+        return hasAvailable ? 'border-green-500' : 'border-red-500';
     };
 
     const getIcon = (slots) => {
-        const hasAvailable = slots.some(slot => slot.status === 'Available');
-        return hasAvailable ? <Check size={20} className="text-success" /> : <Lock size={20} className="text-danger" />;
+        const hasAvailable = slots.some((slot) => slot.status === 'Available');
+        return hasAvailable ? <Check size={20} className="text-green-600" /> : <Lock size={20} className="text-red-500" />;
     };
 
-    const countAvailable = (slots) => slots.filter(slot => slot.status === 'Available').length;
+    const countAvailable = (slots) => slots.filter((slot) => slot.status === 'Available').length;
 
-    // Danh sách loại phòng duy nhất từ dữ liệu
-    const roomTypes = ['All', ...new Set(rooms.map(room => room.description || 'Unknown'))];
+    const roomTypes = ['All', ...new Set(rooms.map((room) => room.description || 'Unknown'))];
 
     const filteredRooms = rooms
-        .filter(room => room.name.toLowerCase().includes(searchText.toLowerCase()))
-        .filter(room =>
-            filterType === 'All' ? true : (room.description || '').toLowerCase().includes(filterType.toLowerCase())
+        .filter((room) => room.name.toLowerCase().includes(searchText.toLowerCase()))
+        .filter((room) =>
+            filterType === 'All'
+                ? true
+                : (room.description || '').toLowerCase().includes(filterType.toLowerCase())
         )
         .sort((a, b) => a.name.localeCompare(b.name));
 
     return (
-        <div className="container-fluid">
-            <h2 className="fw-bold text-center text-danger mb-4">ROOM LIST</h2>
+        <div className="w-full px-4">
+            <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">ROOM LIST</h2>
 
-            {/* Tìm kiếm và lọc */}
-            <div className="row mb-4 justify-content-center">
-                <div className="col-md-5">
-                    <input
-                        type="text"
-                        className="form-control shadow-sm"
-                        placeholder="Search room..."
-                        value={searchText}
-                        onChange={(e) => setSearchText(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3 mt-2 mt-md-0">
-                    <select
-                        className="form-select shadow-sm"
-                        value={filterType}
-                        onChange={(e) => setFilterType(e.target.value)}
-                    >
-                        {roomTypes.map((type, index) => (
-                            <option key={index} value={type}>{type}</option>
-                        ))}
-                    </select>
-                </div>
+            {/* Search and filter */}
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-6">
+                <input
+                    type="text"
+                    className="w-full max-w-md px-4 py-2 border rounded shadow-sm"
+                    placeholder="Search room..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                />
+                <select
+                    className="w-full max-w-xs px-4 py-2 border rounded shadow-sm"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                >
+                    {roomTypes.map((type, index) => (
+                        <option key={index} value={type}>
+                            {type}
+                        </option>
+                    ))}
+                </select>
             </div>
 
-            {/* Danh sách phòng */}
-            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {filteredRooms.map((room) => (
-                    <div key={room.id} className="col">
+            {/* Room list */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredRooms.map((room) => {
+                    const available = countAvailable(room.slots);
+                    return (
                         <div
-                            className={`card h-100 border-2 ${getColorClass(room.slots)} shadow-sm`}
-                            style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                            key={room.id}
+                            className={`border-2 ${getColorClass(
+                                room.slots
+                            )} rounded-lg shadow-md transition-transform duration-200 hover:scale-[1.02] cursor-pointer`}
                             onClick={() => onSelectRoom(room)}
-                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-                            <div className="card-body d-flex justify-content-between align-items-center">
+                        >
+                            <div className="p-4 flex justify-between items-center">
                                 <div>
-                                    <h5 className="card-title mb-1">{room.name}</h5>
-                                    <span className="badge bg-light text-dark">
-                                        {countAvailable(room.slots)} slots available
+                                    <h5 className="text-lg font-semibold mb-1">{room.name}</h5>
+                                    <span className="inline-block text-sm bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                                        {available === 0
+                                            ? 'No slot left'
+                                            : `${available} slot${available > 1 ? 's' : ''} available`}
                                     </span>
-                                    <div className="text-white-50 small fst-italic mt-1">{room.description}</div>
+                                    <div className="text-sm italic text-gray-500 mt-1">{room.description}</div>
                                 </div>
                                 <div>{getIcon(room.slots)}</div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

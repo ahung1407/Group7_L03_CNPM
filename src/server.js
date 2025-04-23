@@ -1,13 +1,15 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import Room from './models/Room.js';
 
-const app = express(); // Khai báo app
+dotenv.config();
+
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Debug: In ra MONGO_URI để kiểm tra
 console.log('MONGO_URI:', process.env.MONGO_URI);
 
 mongoose
@@ -15,184 +17,180 @@ mongoose
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('MongoDB connection error:', err));
 
-const Room = require('./models/Room');
-
-// API để khởi tạo dữ liệu
+// API để khởi tạo dữ liệu (chỉ khi INIT_DATA=true)
 if (process.env.INIT_DATA === 'true') {
     app.post('/api/rooms/init', async (req, res) => {
         try {
-            const initialRooms = [
-                {
-                    id: 1,
-                    name: 'H6-001',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                    ],
-                    description: 'Individual study'
-                },
-                {
-                    id: 2,
-                    name: 'H6-002',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                    ],
-                    description: 'Group study'
-                },
-                {
-                    id: 3,
-                    name: 'H6-003',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Available' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                    ],
-                    description: 'Individual study'
-                },
-                {
-                    id: 4,
-                    name: 'H6-004',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
-                    ],
-                    description: '1-1 mentoring'
-                },
-                {
-                    id: 5,
-                    name: 'H6-005',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                    ],
-                    description: 'Individual study'
-                },
-                {
-                    id: 6,
-                    name: 'H6-006',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                    ],
-                    description: 'Group study'
-                },
-                {
-                    id: 7,
-                    name: 'H6-007',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                    ],
-                    description: 'Individual study'
-                },
-                {
-                    id: 8,
-                    name: 'H6-008',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Available' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                    ],
-                    description: 'Individual study'
-                },
-                {
-                    id: 9,
-                    name: 'H6-009',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
-                    ],
-                    description: 'Group study'
-                },
-                {
-                    id: 10,
-                    name: 'H6-010',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Available' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Available' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                    ],
-                    description: 'Individual study'
-                },
-                {
-                    id: 11,
-                    name: 'H6-011',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Available' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Available' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Available' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Available' },
-                    ],
-                    description: '1-1 mentoring'
-                },
-                {
-                    id: 12,
-                    name: 'H6-012',
-                    slots: [
-                        { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
-                        { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
-                        { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
-                        { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
-                        { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
-                        { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
-                        { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
-                    ],
-                    description: 'Individual study'
-                },
-            ];
+            const initialRooms = [{
+                id: 1,
+                name: 'H6-001',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                ],
+                description: 'Individual study'
+            },
+            {
+                id: 2,
+                name: 'H6-002',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                ],
+                description: 'Group study'
+            },
+            {
+                id: 3,
+                name: 'H6-003',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Available' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                ],
+                description: 'Individual study'
+            },
+            {
+                id: 4,
+                name: 'H6-004',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
+                ],
+                description: '1-1 mentoring'
+            },
+            {
+                id: 5,
+                name: 'H6-005',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                ],
+                description: 'Individual study'
+            },
+            {
+                id: 6,
+                name: 'H6-006',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                ],
+                description: 'Group study'
+            },
+            {
+                id: 7,
+                name: 'H6-007',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                ],
+                description: 'Individual study'
+            },
+            {
+                id: 8,
+                name: 'H6-008',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Available' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                ],
+                description: 'Individual study'
+            },
+            {
+                id: 9,
+                name: 'H6-009',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Maintained' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Maintained' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Maintained' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Maintained' },
+                ],
+                description: 'Group study'
+            },
+            {
+                id: 10,
+                name: 'H6-010',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Available' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Reserved' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Available' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                ],
+                description: 'Individual study'
+            },
+            {
+                id: 11,
+                name: 'H6-011',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Available' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Available' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Maintained' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Available' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Available' },
+                ],
+                description: '1-1 mentoring'
+            },
+            {
+                id: 12,
+                name: 'H6-012',
+                slots: [
+                    { id: 1, range: '7:00 - 9:00', status: 'Reserved' },
+                    { id: 2, range: '9:00 - 11:00', status: 'Reserved' },
+                    { id: 3, range: '11:00 - 13:00', status: 'Maintained' },
+                    { id: 4, range: '13:00 - 15:00', status: 'Reserved' },
+                    { id: 5, range: '15:00 - 17:00', status: 'Reserved' },
+                    { id: 6, range: '17:00 - 19:00', status: 'Maintained' },
+                    { id: 7, range: '19:00 - 21:00', status: 'Reserved' },
+                ],
+                description: 'Individual study'
+            },];
 
-            await Room.deleteMany({});
+            await Room.deleteMany();
             await Room.insertMany(initialRooms);
 
             res.status(201).json({ message: 'Rooms initialized successfully' });
@@ -203,7 +201,7 @@ if (process.env.INIT_DATA === 'true') {
     });
 }
 
-// Các API khác
+// Lấy toàn bộ danh sách phòng
 app.get('/api/rooms', async (req, res) => {
     try {
         const rooms = await Room.find();
@@ -213,6 +211,7 @@ app.get('/api/rooms', async (req, res) => {
     }
 });
 
+// Lấy thông tin chi tiết 1 phòng
 app.get('/api/rooms/:id', async (req, res) => {
     try {
         const room = await Room.findOne({ id: req.params.id });
@@ -223,6 +222,7 @@ app.get('/api/rooms/:id', async (req, res) => {
     }
 });
 
+// Cập nhật danh sách khung giờ của phòng
 app.put('/api/rooms/:id/slots', async (req, res) => {
     try {
         const { slots } = req.body;

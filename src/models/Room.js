@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const slotSchema = new mongoose.Schema({
     id: Number,
@@ -13,4 +13,5 @@ const roomSchema = new mongoose.Schema({
     description: String
 });
 
-module.exports = mongoose.model('Room', roomSchema);
+const Room = mongoose.model('Room', roomSchema);
+export default Room;
