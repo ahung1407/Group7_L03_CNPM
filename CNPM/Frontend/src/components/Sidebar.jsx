@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ onActionClick, role }) => {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
   const menuBtnRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -23,7 +25,13 @@ const Sidebar = ({ onActionClick, role }) => {
   }, [isOpen]);
 
   const handleActionClick = (action) => {
-    onActionClick(action);
+    if (action.action === "Đặt chỗ học") {
+      navigate('/dat-cho-hoc');
+    } else {
+      // Placeholder cho API call hoặc logic sau này
+      console.log(`Sidebar action clicked: ${action.action} for ${role}`);
+      // Ví dụ: fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify({ action }) })
+    }
     setIsOpen(false);
   };
 

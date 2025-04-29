@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-const QuickActions = ({ type, onActionClick }) => {
+const QuickActions = ({ type }) => {
   const studentActions = [
     "Đặt chỗ học",
     "Check in & Check out",
@@ -22,7 +22,9 @@ const QuickActions = ({ type, onActionClick }) => {
     if (action === "Đặt chỗ học") {
       navigate('/dat-cho-hoc');
     } else {
-      onActionClick({ type, action });
+      // Placeholder cho API call hoặc logic sau này
+      console.log(`Action clicked: ${action} for ${type}`);
+      // Ví dụ: fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify({ action }) })
     }
   };
 
