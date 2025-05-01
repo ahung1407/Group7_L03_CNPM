@@ -21,10 +21,13 @@ const QuickActions = ({ type }) => {
   const handleActionClick = (action) => {
     if (action === "Đặt chỗ học") {
       navigate('/dat-cho-hoc');
-    } else {
-      // Placeholder cho API call hoặc logic sau này
+    } else if (action === "Check in & Check out") {
+      navigate('/checkin-checkout');
+    } else if (action === "Đánh giá & phản hồi") {
+      navigate('/feedback');
+    }
+     else {
       console.log(`Action clicked: ${action} for ${type}`);
-      // Ví dụ: fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify({ action }) })
     }
   };
 

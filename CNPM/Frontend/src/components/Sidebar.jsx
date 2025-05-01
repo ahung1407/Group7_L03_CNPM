@@ -27,10 +27,10 @@ const Sidebar = ({ onActionClick, role }) => {
   const handleActionClick = (action) => {
     if (action.action === "Đặt chỗ học") {
       navigate('/dat-cho-hoc');
+    } else if (action.action === "Check in & Check out") {
+      navigate('/checkin-checkout');
     } else {
-      // Placeholder cho API call hoặc logic sau này
       console.log(`Sidebar action clicked: ${action.action} for ${role}`);
-      // Ví dụ: fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify({ action }) })
     }
     setIsOpen(false);
   };
