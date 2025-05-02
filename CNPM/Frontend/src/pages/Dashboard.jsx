@@ -68,17 +68,17 @@ const Dashboard = () => {
       setActionMessage("⚠️ Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.");
       return;
     }
-  
+
     if (userData.role === "student" && type === "admin") {
       setActionMessage("❌ Bạn không có quyền truy cập chức năng dành cho admin.");
       return;
     }
-  
+
     // ✅ Điều hướng đến trang web mẫu tùy theo loại và hành động
     const pageSlug = action.toLowerCase().replace(/\s+/g, "-");
     navigate(`/${type}/${pageSlug}`);
   };
-  
+
 
   const handleLogout = async () => {
     const token = sessionStorage.getItem("authToken");

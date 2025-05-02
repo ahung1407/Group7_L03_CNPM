@@ -519,13 +519,12 @@ const BookingForm = () => {
               type="text"
               name="fullName"
               placeholder="Họ và Tên"
-              className={`p-3 rounded bg-gray-800 border-2 ${
-                errors.fullName
+              className={`p-3 rounded bg-gray-800 border-2 ${errors.fullName
                   ? 'border-red-500'
                   : formData.fullName
-                  ? 'border-green-500'
-                  : 'border-transparent'
-              } text-lg`}
+                    ? 'border-green-500'
+                    : 'border-transparent'
+                } text-lg`}
               value={formData.fullName}
               onChange={handleInputChange}
             />
@@ -534,13 +533,12 @@ const BookingForm = () => {
               type="text"
               name="studentId"
               placeholder="MSSV"
-              className={`p-3 rounded bg-gray-800 border-2 ${
-                errors.studentId
+              className={`p-3 rounded bg-gray-800 border-2 ${errors.studentId
                   ? 'border-red-500'
                   : formData.studentId
-                  ? 'border-green-500'
-                  : 'border-transparent'
-              } text-lg`}
+                    ? 'border-green-500'
+                    : 'border-transparent'
+                } text-lg`}
               value={formData.studentId}
               onChange={handleInputChange}
             />
@@ -549,13 +547,12 @@ const BookingForm = () => {
               type="email"
               name="email"
               placeholder="Email"
-              className={`p-3 rounded bg-gray-800 border-2 ${
-                errors.email
+              className={`p-3 rounded bg-gray-800 border-2 ${errors.email
                   ? 'border-red-500'
                   : formData.email
-                  ? 'border-green-500'
-                  : 'border-transparent'
-              } text-lg`}
+                    ? 'border-green-500'
+                    : 'border-transparent'
+                } text-lg`}
               value={formData.email}
               onChange={handleInputChange}
             />
@@ -564,13 +561,12 @@ const BookingForm = () => {
               type="text"
               name="phone"
               placeholder="Số Điện Thoại"
-              className={`p-3 rounded bg-gray-800 border-2 ${
-                errors.phone
+              className={`p-3 rounded bg-gray-800 border-2 ${errors.phone
                   ? 'border-red-500'
                   : formData.phone
-                  ? 'border-green-500'
-                  : 'border-transparent'
-              } text-lg`}
+                    ? 'border-green-500'
+                    : 'border-transparent'
+                } text-lg`}
               value={formData.phone}
               onChange={handleInputChange}
             />
@@ -579,13 +575,12 @@ const BookingForm = () => {
               type="text"
               name="className"
               placeholder="Lớp"
-              className={`p-3 rounded bg-gray-800 border-2 ${
-                errors.className
+              className={`p-3 rounded bg-gray-800 border-2 ${errors.className
                   ? 'border-red-500'
                   : formData.className
-                  ? 'border-green-500'
-                  : 'border-transparent'
-              } text-lg`}
+                    ? 'border-green-500'
+                    : 'border-transparent'
+                } text-lg`}
               value={formData.className}
               onChange={handleInputChange}
             />

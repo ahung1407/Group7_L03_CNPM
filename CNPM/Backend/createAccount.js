@@ -8,13 +8,13 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Login', {
 }).then(async () => {
   try {
     const newAccount = new Account({
-      username: 'admin1',
+      username: 'admin2',
       password: 'admin123',
       Name: 'Admin',
       MSSV: '2213489',
       SDT: '0702737500',
       Class: 'MT22KT03',
-      role: 'student',
+      role: 'admin',
       email: 'hoductin16088@gmail.com',
     });
 

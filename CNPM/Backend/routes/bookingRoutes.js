@@ -143,4 +143,448 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/bookings', authenticateToken, async (req, res) => {
+  try {
+    const { excludeDeleted } = req.query;
+    const query = excludeDeleted ? { isDeleted: { $ne: true } } : {};
+    if (req.user.role !== 'admin') {
+      query.account = req.user._id; // Chỉ cho phép người dùng xem bookings của họ
+    }
+    const bookings = await Booking.find(query).populate('account', 'username Name MSSV email');
+    res.json(bookings);
+  } catch (err) {
+    console.error('Lỗi khi lấy danh sách đặt chỗ:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+// API lấy danh sách phòng trống để chuyển lớp
+router.get('/available-classes', authenticateToken, async (req, res) => {
+  try {
+    const rooms = await Room.find({ status: 'Available' });
+    res.json(rooms);
+  } catch (err) {
+    console.error('Lỗi khi lấy danh sách phòng trống:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+// API chuyển lớp
+router.post('/transfer-class', authenticateToken, async (req, res) => {
+  const { bookingId, newRoomId } = req.body;
+
+  // Kiểm tra tham số đầu vào
+  if (!newRoomId || typeof newRoomId !== 'string') {
+    return res.status(400).json({ message: 'newRoomId không hợp lệ, phải là chuỗi' });
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Tìm booking
+    const booking = await Booking.findById(bookingId).session(session);
+    if (!booking) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy đặt chỗ' });
+    }
+
+    // Kiểm tra trạng thái isDeleted
+    if (booking.isDeleted) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Đặt chỗ đã bị xóa, không thể chuyển lớp' });
+    }
+
+    // Kiểm tra quyền truy cập
+    if (booking.account.toString() !== req.user._id && req.user.role !== 'admin') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(403).json({ message: 'Bạn không có quyền chuyển lớp này' });
+    }
+
+    // Tìm phòng mới bằng _id
+    const newRoom = await Room.findById(newRoomId).session(session);
+    if (!newRoom) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy phòng mới với newRoomId: ' + newRoomId });
+    }
+
+    // Kiểm tra trạng thái phòng mới
+    if (newRoom.status !== 'Available') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Phòng mới không trống' });
+    }
+
+    // Cập nhật thông tin đặt chỗ dựa trên thông tin của phòng mới
+    booking.classId = newRoom.classId;
+    booking.timeSlot = newRoom.timeSlot;
+    booking.date = newRoom.date;
+    booking.status = 'transferred';
+
+    // Cập nhật trạng thái phòng mới
+    newRoom.status = 'Booked';
+
+    // Lưu thay đổi
+    await newRoom.save({ session });
+    await booking.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({
+      message: 'Chuyển lớp thành công. Vui lòng xác nhận để hoàn tất.',
+      booking: {
+        _id: booking._id,
+        classId: booking.classId,
+        timeSlot: booking.timeSlot,
+        campus: booking.campus,
+        status: booking.status,
+        fullname: booking.fullname,
+        date: booking.date,
+        dateVN: booking.dateVN,
+        description: booking.description,
+      },
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Lỗi khi chuyển lớp:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+// API xác nhận chuyển lớp
+router.post('/confirm-transfer', authenticateToken, async (req, res) => {
+  const { bookingId } = req.body;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const booking = await Booking.findById(bookingId).session(session);
+    if (!booking) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy đặt chỗ' });
+    }
+
+    // Kiểm tra trạng thái isDeleted
+    if (booking.isDeleted) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Đặt chỗ đã bị xóa, không thể xác nhận chuyển lớp' });
+    }
+
+    if (booking.account.toString() !== req.user._id && req.user.role !== 'admin') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(403).json({ message: 'Bạn không có quyền xác nhận chuyển lớp này' });
+    }
+
+    if (booking.status !== 'transferred') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Đặt chỗ không ở trạng thái transferred' });
+    }
+
+    booking.status = 'booked';
+    await booking.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({
+      message: 'Xác nhận chuyển lớp thành công. Đặt chỗ đã được hoàn tất.',
+      booking: {
+        _id: booking._id,
+        classId: booking.classId,
+        timeSlot: booking.timeSlot,
+        campus: booking.campus,
+        status: booking.status,
+        fullname: booking.fullname,
+        date: booking.date,
+        dateVN: booking.dateVN,
+        description: booking.description,
+      },
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Lỗi khi xác nhận chuyển lớp:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+// API hủy đặt chỗ
+router.post('/cancel-booking', authenticateToken, async (req, res) => {
+  const { bookingId } = req.body;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Tìm booking
+    const booking = await Booking.findById(bookingId).session(session);
+    if (!booking) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy đặt chỗ' });
+    }
+
+    // Kiểm tra trạng thái isDeleted
+    if (booking.isDeleted) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Đặt chỗ đã bị xóa, không thể hủy' });
+    }
+
+    // Kiểm tra quyền truy cập
+    if (booking.account.toString() !== req.user._id && req.user.role !== 'admin') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(403).json({ message: 'Bạn không có quyền hủy đặt chỗ này' });
+    }
+
+    // Cập nhật trạng thái booking
+    booking.status = 'cancelled';
+
+    // Lưu thay đổi
+    await booking.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({
+      message: 'Hủy đặt chỗ thành công',
+      booking: {
+        _id: booking._id,
+        classId: booking.classId,
+        timeSlot: booking.timeSlot,
+        campus: booking.campus,
+        status: booking.status,
+        fullname: booking.fullname,
+        isDeleted: booking.isDeleted,
+        date: booking.date,
+        dateVN: booking.dateVN,
+        description: booking.description,
+      },
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Lỗi khi hủy đặt chỗ:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+// API xác nhận hủy đặt chỗ
+router.post('/confirm-cancel', authenticateToken, async (req, res) => {
+  const { bookingId } = req.body;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const booking = await Booking.findById(bookingId).session(session);
+    if (!booking) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy đặt chỗ' });
+    }
+
+    if (booking.account.toString() !== req.user._id && req.user.role !== 'admin') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(403).json({ message: 'Bạn không có quyền xác nhận hủy đặt chỗ này' });
+    }
+
+    if (booking.status !== 'cancelled') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Đặt chỗ không ở trạng thái cancelled' });
+    }
+
+    booking.isDeleted = true;
+    booking.deletedAt = new Date();
+    await booking.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({
+      message: 'Xác nhận hủy đặt chỗ thành công',
+      booking: {
+        _id: booking._id,
+        classId: booking.classId,
+        timeSlot: booking.timeSlot,
+        campus: booking.campus,
+        status: booking.status,
+        fullname: booking.fullname,
+        isDeleted: booking.isDeleted,
+        date: booking.date,
+        dateVN: booking.dateVN,
+        description: booking.description,
+      },
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Lỗi khi xác nhận hủy đặt chỗ:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// API hoàn tác hủy đặt chỗ
+router.post('/undo-cancel', authenticateToken, async (req, res) => {
+  const { bookingId } = req.body;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const booking = await Booking.findById(bookingId).session(session);
+    if (!booking) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy đặt chỗ' });
+    }
+
+    if (booking.account.toString() !== req.user._id && req.user.role !== 'admin') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(403).json({ message: 'Bạn không có quyền hoàn tác hủy đặt chỗ này' });
+    }
+
+    if (booking.status !== 'cancelled') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Đặt chỗ không ở trạng thái cancelled' });
+    }
+
+    // Tìm phòng (bỏ dateVN)
+    const room = await Room.findOne({
+      classId: booking.classId,
+      campus: booking.campus,
+      timeSlot: booking.timeSlot,
+      date: booking.date,
+    }).session(session);
+
+    if (!room) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy phòng' });
+    }
+
+    // Kiểm tra xem có booking nào khác đang sử dụng phòng này không
+    const existingBooking = await Booking.findOne({
+      classId: room.classId,
+      campus: room.campus,
+      timeSlot: room.timeSlot,
+      date: room.date,
+      status: 'booked',
+      _id: { $ne: booking._id } // Loại trừ booking hiện tại
+    }).session(session);
+
+    if (existingBooking) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Phòng đã được đặt bởi booking khác, không thể hoàn tác' });
+    }
+
+    // Cập nhật trạng thái booking và phòng
+    booking.status = 'booked';
+    booking.isDeleted = false;
+    room.status = 'Booked';
+
+    await room.save({ session });
+    await booking.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({
+      message: 'Hoàn tác hủy đặt chỗ thành công. Đặt chỗ đã được khôi phục.',
+      booking: {
+        _id: booking._id,
+        classId: booking.classId,
+        timeSlot: booking.timeSlot,
+        campus: booking.campus,
+        status: booking.status,
+        fullname: booking.fullname,
+        date: booking.date,
+        dateVN: booking.dateVN,
+        description: booking.description,
+      },
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Lỗi khi hoàn tác hủy đặt chỗ:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// API đánh dấu đặt chỗ là đã xóa
+router.patch('/bookings/:id', authenticateToken, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const booking = await Booking.findById(req.params.id).session(session);
+    if (!booking) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy đặt chỗ' });
+    }
+
+    if (booking.account.toString() !== req.user._id && req.user.role !== 'admin') {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(403).json({ message: 'Bạn không có quyền xóa đặt chỗ này' });
+    }
+
+    // Kiểm tra trạng thái isDeleted
+    if (booking.isDeleted) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Đặt chỗ đã bị xóa trước đó' });
+    }
+
+    // Tìm phòng tương ứng
+    const room = await Room.findOne({
+      classId: booking.classId,
+      campus: booking.campus,
+      timeSlot: booking.timeSlot,
+      date: booking.date,
+    }).session(session);
+
+    if (!room) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy phòng' });
+    }
+
+    // Cập nhật trạng thái phòng về Available
+    room.status = 'Available';
+    await room.save({ session });
+
+    // Đánh dấu booking là đã xóa
+    booking.isDeleted = true;
+    booking.deletedAt = new Date();
+    await booking.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({
+      message: 'Đặt chỗ đã được đánh dấu là xóa và phòng đã được cập nhật về trạng thái Available',
+      booking,
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Lỗi khi đánh dấu xóa đặt chỗ:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

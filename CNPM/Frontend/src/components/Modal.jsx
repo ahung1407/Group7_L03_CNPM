@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
-import logo from "../assets/images/logobachkhoa.png";
+import logo from "../assets/images/hcmut.png";
 
 const Modal = ({ onForgotPasswordClick }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);

@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const roomRoutes = require('./routes/roomRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const adminRoutes = require('./routes/adminRoutes')
 const nodemailer = require('nodemailer');
 
 dotenv.config();
@@ -51,6 +52,7 @@ app.locals.transporter = transporter;
 app.use('/api', authRoutes);
 app.use('/api', roomRoutes);
 app.use('/api/bookings', bookingRoutes)
+app.use('/api', adminRoutes)
 
 const PORT = process.env.PORT || 5001;
 const server = app.listen(PORT, () => {
