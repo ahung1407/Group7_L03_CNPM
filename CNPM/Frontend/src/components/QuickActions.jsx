@@ -19,6 +19,7 @@ const QuickActions = ({ type }) => {
   const navigate = useNavigate();
 
   const handleActionClick = (action) => {
+    if (type === "student") {
     if (action === "Đặt chỗ học") {
       navigate('/dat-cho-hoc');
     }
@@ -28,12 +29,34 @@ const QuickActions = ({ type }) => {
     else if (action === "Lịch sử đặt chỗ") {
       navigate('/lich-su-dat-cho')
     }
+    else if (action === "Check in & Check out") {
+      navigate('/checkin-checkout');
+    } 
+    else if (action === "Đánh giá & phản hồi") {
+      navigate('/feedback');
+    }
     else {
       // Placeholder cho API call hoặc logic sau này
       console.log(`Action clicked: ${action} for ${type}`);
       // Ví dụ: fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify({ action }) })
     }
-  };
+  }
+  else if (type === "admin") {
+    // TODO: Kiểm tra quyền admin trước khi điều hướng (ví dụ: kiểm tra role từ UserContext hoặc token)
+    // Xử lý các hành động của admin (chưa có route)
+    if (action === "Quản lý đặt chỗ") {
+      // TODO: Điều hướng đến route quản lý đặt chỗ, ví dụ: navigate('/admin/quan-ly-dat-cho');
+    } else if (action === "Quản lý không gian") {
+      // TODO: Điều hướng đến route quản lý không gian, ví dụ: navigate('/admin/quan-ly-khong-gian');
+    } else if (action === "Thống kê & báo cáo") {
+      // TODO: Điều hướng đến route thống kê & báo cáo, ví dụ: navigate('/admin/thong-ke-bao-cao');
+    } else if (action === "Quản lý phân hội") {
+      // TODO: Điều hướng đến route quản lý phân hội, ví dụ: navigate('/admin/quan-ly-phan-hoi');
+    } else {
+      console.log(`Action clicked: ${action} for admin`);
+    }
+  }
+};
 
   return (
     <div

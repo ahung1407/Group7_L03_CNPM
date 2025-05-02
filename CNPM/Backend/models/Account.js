@@ -4,12 +4,14 @@ const bcrypt = require('bcrypt');
 const AccountSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  Name :{ type: String, required: true, unique: true },
+  Name: { type: String, required: true, unique: true },
   MSSV: { type: String, required: true, unique: true },
-  SDT:{ type: String, required: true, unique: true },
+  SDT: { type: String, required: true, unique: true },
   Class: { type: String, required: true, unique: true },
   role: { type: String, enum: ['student', 'admin'], default: 'student' },
-  email: { type: String, required: true, unique: true }, // Thêm trường email
+  email: { type: String, required: true, unique: true },
+  failedAttempts: { type: Number, default: 0 }, // Đếm số lần đăng nhập sai
+  lockoutUntil: { type: Date, default: null }, // Thời gian hết khóa
 }, {
   collection: 'accounts'
 });
@@ -38,6 +40,11 @@ AccountSchema.methods.verify_pass = async function (password) {
     console.error('Lỗi khi so sánh mật khẩu:', error.message);
     return false;
   }
+};
+
+// Kiểm tra trạng thái khóa tài khoản
+AccountSchema.methods.isLocked = function () {
+  return this.lockoutUntil && this.lockoutUntil > new Date();
 };
 
 module.exports = mongoose.model('Account', AccountSchema);

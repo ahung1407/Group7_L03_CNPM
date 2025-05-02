@@ -7,7 +7,8 @@ import SeatList from "./pages/SeatList.jsx";
 import BookingForm from "./pages/BookingForm.jsx";
 import RoomList from './pages/room_list.jsx';
 import ClassListPage from './pages/ClassListPage.jsx';
-
+import CheckInOutList from "./pages/CheckInCheckOut.jsx";
+import FeedBack from "./pages/FeedbackForm.jsx";
 
 // Component để bảo vệ route
 const PrivateRoute = ({ element }) => {
@@ -27,6 +28,9 @@ function App() {
           <Route path="/booking" element={<PrivateRoute element={<BookingForm />} />} />
           <Route path="/xem-ds-phong" element={<PrivateRoute element={<RoomList />} />} />
           <Route path="/lich-su-dat-cho" element={<PrivateRoute element={<ClassListPage />} />} />
+          <Route path="/checkin-checkout" element={<PrivateRoute element={<CheckInOutList />} />} />
+          <Route path="/feedback" element={<PrivateRoute element={<FeedBack />} />} />
+          <Route path="/feedback/:bookingId" element={<PrivateRoute element={<FeedBack />} />} />
         </Routes>
       </UserProvider>
     </Router>

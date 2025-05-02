@@ -16,25 +16,21 @@ router.get('/user', async (req, res) => {
   }
 
   try {
-    // Giải mã token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
     console.log('Token hợp lệ:', decoded);
 
-    // Tìm tài khoản
     const account = await Account.findOne({ username: decoded.username });
     if (!account) {
       console.warn('Không tìm thấy tài khoản với username:', decoded.username);
       return res.status(404).json({ message: 'Tài khoản không tồn tại' });
     }
 
-    // Kiểm tra session còn tồn tại không
     const session = await Session.findOne({ sessionID: token });
     if (!session) {
       console.warn('Không tìm thấy session tương ứng.');
       return res.status(401).json({ message: 'Phiên không còn tồn tại' });
     }
 
-    // Trả dữ liệu người dùng
     console.log('Lấy thông tin người dùng thành công:', {
       username: account.username,
       Name: account.Name,
@@ -78,14 +74,38 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Tên đăng nhập không tồn tại' });
     }
 
+    // Kiểm tra trạng thái khóa tài khoản
+    if (account.isLocked()) {
+      const lockoutTimeLeft = Math.ceil((account.lockoutUntil - new Date()) / 60000);
+      console.log('Tài khoản bị khóa, thời gian còn lại:', lockoutTimeLeft, 'phút');
+      return res.status(403).json({ message: `Tài khoản bị khóa. Vui lòng thử lại sau ${lockoutTimeLeft} phút.` });
+    }
+
     const isValidPassword = await account.verify_pass(password);
     if (!isValidPassword) {
+      // Tăng số lần đăng nhập sai
+      account.failedAttempts = (account.failedAttempts || 0) + 1;
+      console.log('Tăng failedAttempts:', account.failedAttempts);
+
+      // Khóa tài khoản nếu sai 5 lần
+      if (account.failedAttempts >= 5) {
+        account.lockoutUntil = new Date(Date.now() + 15 * 60 * 1000); // Khóa 15 phút
+        console.log('Khóa tài khoản đến:', account.lockoutUntil);
+      }
+      await account.save();
+
       console.log('Mật khẩu không đúng cho username:', username);
       return res.status(401).json({ message: 'Mật khẩu không đúng' });
     }
 
+    // Reset failedAttempts khi đăng nhập thành công
+    account.failedAttempts = 0;
+    account.lockoutUntil = null;
+    await account.save();
+    console.log('Reset failedAttempts và lockoutUntil cho username:', username);
+
     const token = jwt.sign(
-      { 
+      {
         _id: account._id,
         username: account.username,
         Name: account.Name,
@@ -93,17 +113,12 @@ router.post('/login', async (req, res) => {
         SDT: account.SDT,
         Class: account.Class,
         role: account.role,
-        email: account.email
+        email: account.email,
       },
       process.env.JWT_SECRET || 'your_jwt_secret',
       { expiresIn: '1h' }
     );
     console.log('Tạo token thành công:', token);
-
-    if (!account._id) {
-      console.error('Account._id không tồn tại:', account);
-      return res.status(500).json({ message: 'Lỗi server: tài khoản không hợp lệ' });
-    }
 
     const session = new Session({
       sessionID: token,
@@ -120,17 +135,17 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ message: 'Lỗi server: không thể tạo session' });
     }
 
-    res.json({ 
-      token, 
+    res.json({
+      token,
       role: account.role,
       Name: account.Name,
       MSSV: account.MSSV,
       SDT: account.SDT,
       Class: account.Class,
-      email: account.email
+      email: account.email,
     });
   } catch (error) {
-    console.error('Lỗi đăng nhập:', error.message);
+    console.error('Lỗi đăng nhập:', error.message, error.stack);
     res.status(500).json({ message: 'Lỗi server' });
   }
 });

@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
-import logo from "../assets/images/hcmut.png";
+import logo from "../assets/images/logobachkhoa.png";
 
 const Modal = ({ onForgotPasswordClick }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -38,7 +38,6 @@ const Modal = ({ onForgotPasswordClick }) => {
       if (response.ok) {
         console.log("Đăng nhập thành công, lưu token:", data.token);
         sessionStorage.setItem("authToken", data.token);
-        // Lưu thông tin người dùng vào Context
         setUserData({
           username: data.username,
           role: data.role,
@@ -52,7 +51,7 @@ const Modal = ({ onForgotPasswordClick }) => {
         navigate("/dashboard");
       } else {
         console.error("Lỗi đăng nhập:", data.message);
-        alert(data.message);
+        alert(data.message); // Hiển thị thông báo lỗi, bao gồm thông báo khóa tài khoản
       }
     } catch (error) {
       console.error("Lỗi mạng khi gọi API /login:", error.message);

@@ -7,7 +7,8 @@ const roomRoutes = require('./routes/roomRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const adminRoutes = require('./routes/adminRoutes')
 const nodemailer = require('nodemailer');
-
+const checkInOutRoutes = require('./routes/checkInOutController');
+const feedbackRoutes = require('./routes/feedbackRoutes'); // Thêm route feedback
 dotenv.config();
 
 const app = express();
@@ -53,6 +54,8 @@ app.use('/api', authRoutes);
 app.use('/api', roomRoutes);
 app.use('/api/bookings', bookingRoutes)
 app.use('/api', adminRoutes)
+app.use('/api/checkin-checkout', checkInOutRoutes);
+app.use('/api/feedbacks', feedbackRoutes); // Thêm route feedback
 
 const PORT = process.env.PORT || 5001;
 const server = app.listen(PORT, () => {
