@@ -197,7 +197,7 @@ const ClassListPage = () => {
       });
 
       toast.success(
-        `Chuyển lớp thành công: ${selectedBooking.classId} → ${newClass.classId} (${newClass.timeSlot}, ${new Date(newClass.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })})`,
+        `Chuyển lớp thành công: ${selectedBooking.classId} → ${newClass.classId} (${newClass.timeSlot}, ${newClass.date})`,
         { position: 'top-right', autoClose: 3000 }
       );
     } catch (error) {
@@ -301,7 +301,7 @@ const ClassListPage = () => {
         });
 
         toast.info(
-          `Hủy lớp thành công: ${bookingToCancel.classId} (${bookingToCancel.timeSlot}, ${new Date(bookingToCancel.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })})`,
+          `Hủy lớp thành công: ${bookingToCancel.classId} (${bookingToCancel.timeSlot}, ${bookingToCancel.date})`,
           { position: 'top-right', autoClose: 5001 }
         );
 
@@ -410,7 +410,7 @@ const ClassListPage = () => {
                 date: updatedBooking.date,
                 status: mapStatus(updatedBooking.status),
                 isDeleted: false,
-                originalClass: booking.originalClass // Giữ lại thông tin originalClass
+                originalClass: booking.originalClass || booking.classId
               }
             : booking
         )

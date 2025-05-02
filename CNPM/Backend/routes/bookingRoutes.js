@@ -460,26 +460,26 @@ router.post('/undo-cancel', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'Đặt chỗ không ở trạng thái cancelled' });
     }
 
-    // Tìm phòng (bỏ dateVN)
-    const room = await Room.findOne({
+    // Tìm phòng hiện tại
+    const currentRoom = await Room.findOne({
       classId: booking.classId,
       campus: booking.campus,
       timeSlot: booking.timeSlot,
       date: booking.date,
     }).session(session);
 
-    if (!room) {
+    if (!currentRoom) {
       await session.abortTransaction();
       session.endSession();
-      return res.status(404).json({ message: 'Không tìm thấy phòng' });
+      return res.status(404).json({ message: 'Không tìm thấy phòng hiện tại' });
     }
 
     // Kiểm tra xem có booking nào khác đang sử dụng phòng này không
     const existingBooking = await Booking.findOne({
-      classId: room.classId,
-      campus: room.campus,
-      timeSlot: room.timeSlot,
-      date: room.date,
+      classId: currentRoom.classId,
+      campus: currentRoom.campus,
+      timeSlot: currentRoom.timeSlot,
+      date: currentRoom.date,
       status: 'booked',
       _id: { $ne: booking._id } // Loại trừ booking hiện tại
     }).session(session);
@@ -493,9 +493,9 @@ router.post('/undo-cancel', authenticateToken, async (req, res) => {
     // Cập nhật trạng thái booking và phòng
     booking.status = 'booked';
     booking.isDeleted = false;
-    room.status = 'Booked';
+    currentRoom.status = 'Booked';
 
-    await room.save({ session });
+    await currentRoom.save({ session });
     await booking.save({ session });
 
     await session.commitTransaction();

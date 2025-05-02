@@ -9,13 +9,13 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Login', {
   try {
     const newAccount = new Account({
       username: 'admin2',
-      password: 'admin123',
-      Name: 'Admin',
-      MSSV: '2213489',
-      SDT: '0702737500',
-      Class: 'MT22KT03',
+      password: 'admin1234',
+      Name: 'Admin2',
+      MSSV: '2213418',
+      SDT: '0702737501',
+      Class: 'MT22KT04',
       role: 'admin',
-      email: 'hoductin16088@gmail.com',
+      email: 'admin123@gmail.com',
     });
 
     await newAccount.save();
