@@ -8,6 +8,8 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const checkInOutRoutes = require('./routes/checkInOutController');
 const feedbackRoutes = require('./routes/feedbackRoutes'); // Thêm route feedback
 const nodemailer = require('nodemailer');
+const checkInOutRoutes = require('./routes/checkInOutController');
+const feedbackRoutes = require('./routes/feedbackRoutes'); // Thêm route feedback
 
 dotenv.config();
 
@@ -52,7 +54,12 @@ app.locals.transporter = transporter;
 // Gắn các routes
 app.use('/api', authRoutes);
 app.use('/api', roomRoutes);
+<<<<<<< Updated upstream
 app.use('/api/bookings', bookingRoutes);
+=======
+app.use('/api/bookings', bookingRoutes)
+app.use('/api', adminRoutes)
+>>>>>>> Stashed changes
 app.use('/api/checkin-checkout', checkInOutRoutes);
 app.use('/api/feedbacks', feedbackRoutes); // Thêm route feedback
 

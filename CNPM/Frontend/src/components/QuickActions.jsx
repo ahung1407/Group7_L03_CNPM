@@ -19,6 +19,7 @@ const QuickActions = ({ type }) => {
   const navigate = useNavigate();
 
   const handleActionClick = (action) => {
+    if (type === "student") {
     if (action === "Đặt chỗ học") {
       navigate('/dat-cho-hoc');
     } else if (action === "Check in & Check out") {
@@ -26,10 +27,26 @@ const QuickActions = ({ type }) => {
     } else if (action === "Đánh giá & phản hồi") {
       navigate('/feedback');
     }
+<<<<<<< Updated upstream
      else {
+=======
+    else if (action === "Quản lý đặt chỗ") {
+      navigate('/xem-ds-phong')
+    }
+    else if (action === "Lịch sử đặt chỗ") {
+      navigate('/lich-su-dat-cho')
+    } else if (action === "Check in & Check out") {
+      navigate('/checkin-checkout');
+    } else if (action === "Đánh giá & phản hồi") {
+      navigate('/feedback');
+    }
+    else {
+      // Placeholder cho API call hoặc logic sau này
+>>>>>>> Stashed changes
       console.log(`Action clicked: ${action} for ${type}`);
     }
-  };
+  }
+};
 
   return (
     <div

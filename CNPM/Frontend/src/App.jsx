@@ -5,6 +5,11 @@ import Dashboard from "./pages/Dashboard.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import SeatList from "./pages/SeatList.jsx";
 import BookingForm from "./pages/BookingForm.jsx";
+<<<<<<< Updated upstream
+=======
+import RoomList from './pages/room_list.jsx';
+import ClassListPage from './pages/ClassListPage.jsx';
+>>>>>>> Stashed changes
 import CheckInOutList from "./pages/CheckInCheckOut.jsx";
 import FeedBack from "./pages/FeedbackForm.jsx";
 
@@ -24,6 +29,11 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dat-cho-hoc" element={<PrivateRoute element={<SeatList />} />} />
           <Route path="/booking" element={<PrivateRoute element={<BookingForm />} />} />
+<<<<<<< Updated upstream
+=======
+          <Route path="/xem-ds-phong" element={<PrivateRoute element={<RoomList />} />} />
+          <Route path="/lich-su-dat-cho" element={<PrivateRoute element={<ClassListPage />} />} />
+>>>>>>> Stashed changes
           <Route path="/checkin-checkout" element={<PrivateRoute element={<CheckInOutList />} />} />
           <Route path="/feedback" element={<PrivateRoute element={<FeedBack />} />} />
           <Route path="/feedback/:bookingId" element={<PrivateRoute element={<FeedBack />} />} />
