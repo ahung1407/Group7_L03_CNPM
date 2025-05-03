@@ -38,7 +38,7 @@ router.post('/', authenticateToken, async (req, res) => {
       status: req.body.status || 'booked',
       description: req.body.description,
       date: req.body.date,
-      dateVN:req.body.dateVN
+      dateVN: req.body.dateVN
     };
 
     const newBooking = new Booking(bookingData);
@@ -48,17 +48,17 @@ router.post('/', authenticateToken, async (req, res) => {
       classId: req.body.classId,
       campus: req.body.campus,
       timeSlot: req.body.timeSlot,
-      description:req.body.description,
+      description: req.body.description,
       date: req.body.date,
-      dateVN:req.body.dateVN
+      dateVN: req.body.dateVN
     }).session(session);
 
     if (!room) {
       throw new Error('Không tìm thấy phòng để cập nhật trạng thái');
     }
 
-   // room.status = 'Reserved';
-   room.status = 'Booked';
+    // room.status = 'Reserved';
+    room.status = 'Booked';
     await room.save({ session });
 
     await session.commitTransaction();
@@ -217,17 +217,33 @@ router.post('/transfer-class', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'Phòng mới không trống' });
     }
 
+    // Tìm phòng cũ
+    const oldRoom = await Room.findOne({
+      classId: booking.classId,
+      campus: booking.campus,
+      timeSlot: booking.timeSlot,
+      date: booking.date,
+    }).session(session);
+
+    if (!oldRoom) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy phòng cũ' });
+    }
+
     // Cập nhật thông tin đặt chỗ dựa trên thông tin của phòng mới
     booking.classId = newRoom.classId;
     booking.timeSlot = newRoom.timeSlot;
     booking.date = newRoom.date;
     booking.status = 'transferred';
 
-    // Cập nhật trạng thái phòng mới
+    // Cập nhật trạng thái phòng mới và phòng cũ
     newRoom.status = 'Booked';
+    oldRoom.status = 'Available';
 
     // Lưu thay đổi
     await newRoom.save({ session });
+    await oldRoom.save({ session });
     await booking.save({ session });
 
     await session.commitTransaction();
@@ -345,10 +361,26 @@ router.post('/cancel-booking', authenticateToken, async (req, res) => {
       return res.status(403).json({ message: 'Bạn không có quyền hủy đặt chỗ này' });
     }
 
-    // Cập nhật trạng thái booking
+    // Tìm phòng tương ứng
+    const room = await Room.findOne({
+      classId: booking.classId,
+      campus: booking.campus,
+      timeSlot: booking.timeSlot,
+      date: booking.date,
+    }).session(session);
+
+    if (!room) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Không tìm thấy phòng' });
+    }
+
+    // Cập nhật trạng thái booking và phòng
     booking.status = 'cancelled';
+    room.status = 'Available';
 
     // Lưu thay đổi
+    await room.save({ session });
     await booking.save({ session });
 
     await session.commitTransaction();

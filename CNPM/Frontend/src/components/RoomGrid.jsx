@@ -19,9 +19,9 @@ function RoomGrid({ rooms, onSelectRoom }) {
                         <div>
                             <h5 className="text-lg font-semibold mb-1">{room.classId}</h5>
                             <div className="text-sm text-gray-500">{room.dateVN}</div>
-                            <span className="inline-block text-sm bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                            {/* <span className="inline-block text-sm bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
                                 {room.timeSlot}
-                            </span>
+                            </span> */}
                             <div className="text-sm italic text-gray-500 mt-1">{room.description}</div>
                         </div>
                         <div>{getIcon(room.status)}</div>

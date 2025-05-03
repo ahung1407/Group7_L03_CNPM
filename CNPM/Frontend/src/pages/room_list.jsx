@@ -13,8 +13,8 @@ function RoomList() {
     const [selectedRoomList, setSelectedRoomList] = useState([]);
     const [currentClassId, setCurrentClassId] = useState(null);
 
-    const roomTypes = ['Type', ...Array.from(new Set(rooms.map((room) => room.description || 'Unknown')))];
-    const roomCampus = ['Campus', ...Array.from(new Set(rooms.map((room) => room.campus || 'Unknown')))];
+    const roomTypes = ['All', ...Array.from(new Set(rooms.map((room) => room.description || 'Unknown')))];
+    const roomCampus = ['All', ...Array.from(new Set(rooms.map((room) => room.campus || 'Unknown')))];
 
     const filteredRooms = rooms
         .filter((room) => room.classId.toLowerCase().includes(searchText.toLowerCase()))
@@ -82,6 +82,11 @@ function RoomList() {
         setCurrentClassId(null);
     };
 
+    const uniqueRooms = Array.from(
+        new Map(filteredRooms.map((room) => [room.classId, room])).values()
+    );
+
+
     return (
         <div className="w-full px-4">
             <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">ROOM LIST</h2>
@@ -102,7 +107,7 @@ function RoomList() {
                 >
                     {roomTypes.map((type, index) => (
                         <option key={index} value={type}>
-                            {type}
+                            {type === 'All' ? 'Type' : type}
                         </option>
                     ))}
                 </select>
@@ -111,9 +116,9 @@ function RoomList() {
                     value={filterCampus}
                     onChange={(e) => setFilterCampus(e.target.value)}
                 >
-                    {roomCampus.map((type, index) => (
-                        <option key={index} value={type}>
-                            {type}
+                    {roomCampus.map((campus, index) => (
+                        <option key={index} value={campus}>
+                            {campus === 'All' ? 'Campus' : campus}
                         </option>
                     ))}
                 </select>
@@ -139,7 +144,7 @@ function RoomList() {
                 <main className="flex-1 px-6 py-6 overflow-auto">
                     <div className="max-w-6xl mx-auto bg-white/90 backdrop-blur-md shadow-xl rounded-xl p-6">
                         {!currentClassId ? (
-                            <RoomGrid rooms={filteredRooms} onSelectRoom={handleSelectRoom} />
+                            <RoomGrid rooms={uniqueRooms} onSelectRoom={handleSelectRoom} />
                         ) : (
                             <RoomDetail
                                 roomList={selectedRoomList}

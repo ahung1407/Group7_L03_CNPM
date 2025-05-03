@@ -54,9 +54,9 @@ router.post('/:id/checkin-checkout', authenticateToken, async (req, res) => {
 
     if (action === 'checkin') {
       if (existingLogs.length > 0) {
-        return res.status(400).json({ 
-          message: existingLogs[0].action === 'checkin' 
-            ? 'Đã check-in, không thể check-in lại' 
+        return res.status(400).json({
+          message: existingLogs[0].action === 'checkin'
+            ? 'Đã check-in, không thể check-in lại'
             : 'Đã check-out, không thể check-in'
         });
       }
@@ -84,9 +84,15 @@ router.post('/:id/checkin-checkout', authenticateToken, async (req, res) => {
 
       // Cập nhật trạng thái phòng về "Available"
       await Room.findOneAndUpdate(
-        { classId: booking.classId },
+        {
+          classId: booking.classId,
+          timeSlot: booking.timeSlot,
+          dateVN: booking.dateVN,
+          campus: booking.campus
+        },
         { status: 'Available' }
       );
+
     }
 
     res.status(200).json({
