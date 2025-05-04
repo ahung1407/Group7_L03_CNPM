@@ -96,4 +96,35 @@ router.delete('/rooms/:id', authenticate, async (req, res) => {
   }
 });
 
+
+
+
+
+// Route lấy thống kê
+router.get("/statistics", async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const bookedToday = await Room.countDocuments({
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    const availableRooms = await Room.countDocuments({
+      status: "Available",
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    const notificationCount = 0; // có thể làm sau
+
+    res.json({ bookedToday, availableRooms, notificationCount });
+  } catch (err) {
+    console.error("Lỗi khi lấy thống kê phòng:", err);
+    res.status(500).json({ message: "Lỗi server khi lấy thống kê." });
+  }
+});
+
 module.exports = router;

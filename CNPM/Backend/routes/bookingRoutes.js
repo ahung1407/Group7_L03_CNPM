@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const Room = require('../models/Room');
+const Account = require('../models/Account');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
@@ -618,5 +619,57 @@ router.patch('/bookings/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
+
+// GET /booking/getNotification/:username
+router.get('/getNotification/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Tìm account theo username
+    const account = await Account.findOne({ username });
+
+    if (!account) {
+      return res.status(404).json({ message: 'Không tìm thấy tài khoản' });
+    }
+
+    // Lấy tất cả booking liên quan có các status cần thiết
+    const bookings = await Booking.find({
+      account: account._id,
+      status: { $in: ['booked', 'cancelled', 'transferred'] }
+    }).sort({ updatedAt: -1 }); // sắp xếp mới nhất trước
+
+    // Tạo danh sách thông báo
+    const notifications = bookings.map(booking => {
+      let content = '';
+
+      switch (booking.status) {
+        case 'booked':
+          content = `Bạn đã đặt chỗ phòng ${booking.classId} : ${booking.timeSlot} thành công.`;
+          break;
+        case 'cancelled':
+          content = `Bạn đã hủy chỗ phòng ${booking.classId} : ${booking.timeSlot}.`;
+          break;
+        case 'transferred':
+          content = `Bạn đã chuyển từ phòng ${booking.classId} : ${booking.timeSlot} sang ${booking.classId} : ${booking.timeSlot}.`;
+          break;
+        default:
+          content = `Cập nhật mới về phòng ${booking.classId} : ${booking.timeSlot}.`;
+      }
+
+      return {
+        content,
+        createdAt: booking.updatedAt, // để frontend có thể hiển thị thời gian nếu cần
+      };
+    });
+
+    res.json(notifications);
+  } catch (error) {
+    console.error('Lỗi khi lấy thông báo:', error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
+});
+
 
 module.exports = router;

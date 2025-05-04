@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import Sidebar from "../components/Sidebar.jsx";
@@ -10,12 +11,20 @@ const Dashboard = () => {
   const [userData, setUserData] = useState({
     username: "",
     role: "",
+    Name: "",
     sessionValid: true,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [actionMessage, setActionMessage] = useState("");
   const [isLogoutConfirmationOpen, setIsLogoutConfirmationOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [stats, setStats] = useState({
+    bookedToday: 0,
+    availableRooms: 0,
+    notificationCount: 0,
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,8 +50,12 @@ const Dashboard = () => {
           setUserData({
             username: data.username,
             role: data.role,
+            Name: data.Name,
             sessionValid: true,
           });
+
+          fetchStatistics(token);
+          fetchNotifications(data.username);
         } else {
           redirectToLogin(data.message || "Phiên đăng nhập không hợp lệ");
         }
@@ -51,6 +64,44 @@ const Dashboard = () => {
         redirectToLogin("Phiên đăng nhập không còn tồn tại hoặc server lỗi.");
       } finally {
         setIsLoading(false);
+      }
+    };
+
+    const fetchStatistics = async (token) => {
+      try {
+        const response = await fetch("http://localhost:5001/api/statistics", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setStats({
+            bookedToday: data.bookedToday,
+            availableRooms: data.availableRooms,
+            notificationCount: data.notificationCount,
+          });
+        } else {
+          console.warn("Không thể lấy thống kê phòng:", data.message);
+        }
+      } catch (error) {
+        console.error("Lỗi khi fetch thống kê:", error.message);
+      }
+    };
+
+    const fetchNotifications = async (username) => {
+      try {
+        const response = await axios.get(`http://localhost:5001/api/bookings/getNotification/${username}`);
+        if (response.status === 200) {
+          setNotifications(response.data); // [{ content, createdAt }]
+        } else {
+          setNotifications([]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy thông báo:", error?.response?.data || error.message);
+        setNotifications([]);
       }
     };
 
@@ -74,11 +125,9 @@ const Dashboard = () => {
       return;
     }
 
-    // ✅ Điều hướng đến trang web mẫu tùy theo loại và hành động
     const pageSlug = action.toLowerCase().replace(/\s+/g, "-");
     navigate(`/${type}/${pageSlug}`);
   };
-
 
   const handleLogout = async () => {
     const token = sessionStorage.getItem("authToken");
@@ -103,9 +152,10 @@ const Dashboard = () => {
     <>
       <Header
         isDashboard
-        userName={userData.username}
+        userName={userData.Name}
         onLogoutClick={() => setIsLogoutConfirmationOpen(true)}
       />
+
       <main className="dashboard-main p-[130px_20px_20px] bg-gradient-to-br from-[#e6f0fa] to-[#f7f9fc] min-h-[calc(100vh-200px)] relative">
         {isLoading ? (
           <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-[3000]">
@@ -121,7 +171,7 @@ const Dashboard = () => {
             <div className="dashboard-container max-w-[1200px] mx-auto">
               <div className="welcome-section text-center mb-[40px] p-[20px] bg-white rounded-[15px] shadow">
                 <h2 className="text-[28px] text-primary font-semibold mb-[10px]">
-                  Xin chào, {userData.username}! 👋
+                  Xin chào, {userData.Name}! 👋
                 </h2>
                 <p className="text-[16px] text-[#666]">
                   Chào mừng bạn đến với SMRS - Hệ thống quản lý không gian học tập tại Thư viện Bách Khoa.
@@ -130,9 +180,9 @@ const Dashboard = () => {
 
               <div className="quick-info flex justify-between gap-[20px] mb-[40px]">
                 {[
-                  { title: "Đặt chỗ hôm nay", value: "5" },
-                  { title: "Không gian trống", value: "12" },
-                  { title: "Thông báo mới", value: "2" },
+                  { title: "Đặt chỗ hôm nay", value: stats.bookedToday },
+                  { title: "Không gian trống", value: stats.availableRooms },
+                  { title: "Thông báo mới", value: notifications.length },
                 ].map((info) => (
                   <div
                     key={info.title}
@@ -153,24 +203,21 @@ const Dashboard = () => {
               <QuickActions type="student" onActionClick={handleActionClick} />
               <QuickActions type="admin" onActionClick={handleActionClick} />
 
-              <div className="recent-notifications bg-white rounded-[15px] p-[20px] shadow mt-[40px]">
-                <h2 className="text-[24px] text-primary mb-[20px] relative pb-[10px] border-b border-primary/30">
-                  Thông báo gần đây
-                </h2>
-                <ul className="notification-list list-none p-0 m-0">
-                  {[
-                    { icon: "📢", text: "Đặt chỗ của bạn sắp hết giờ (15:00)." },
-                    { icon: "ℹ️", text: "Không gian B1-203 đã trống." },
-                  ].map((notification) => (
-                    <li
-                      key={notification.text}
-                      className="p-[15px_0] text-[14px] text-[#333] border-b last:border-b-0 flex items-center gap-[10px] hover:bg-gray-50 transition-colors duration-300"
-                    >
-                      <span className="notification-icon text-[18px]">{notification.icon}</span>
-                      {notification.text}
-                    </li>
-                  ))}
-                </ul>
+              <div className="notifications-section mt-[40px] bg-white rounded-[10px] p-[20px] shadow">
+                <h2 className="text-xl font-semibold mb-4">🔔 Thông báo gần đây</h2>
+                {notifications.length === 0 ? (
+                  <p className="text-gray-500">Không có thông báo mới.</p>
+                ) : (
+                  <div className="notification-list max-h-[220px] overflow-y-auto pr-2">
+  <ul className="list-none p-0 m-0">
+    {notifications.slice(0, 5).map((note, idx) => (
+      <li key={idx} className="mb-2 text-[#333]">
+        <span className="mr-2">📢</span> {note.content}
+      </li>
+    ))}
+  </ul>
+</div>
+                )}
               </div>
             </div>
           </>

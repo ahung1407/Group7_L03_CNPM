@@ -25,28 +25,45 @@ const Sidebar = ({ onActionClick, role }) => {
   }, [isOpen]);
 
   const handleActionClick = (action) => {
-    if (action.action === "Đặt chỗ học") {
-      navigate('/dat-cho-hoc');
-    } else {
-      // Placeholder cho API call hoặc logic sau này
-      console.log(`Sidebar action clicked: ${action.action} for ${role}`);
-      // Ví dụ: fetch('your-api-endpoint', { method: 'POST', body: JSON.stringify({ action }) })
+    const { type, action: actionName } = action;
+
+    if (type === "student") {
+      if (actionName === "Đặt chỗ học") {
+        navigate('/dat-cho-hoc');
+      } else if (actionName === "Check in & Check out") {
+        navigate('/checkin-checkout');
+      } else if (actionName === "Lịch sử đặt chỗ") {
+        navigate('/lich-su-dat-cho');
+      } else if (actionName === "Đánh giá & phản hồi") {
+        navigate('/feedback');
+      } else {
+        console.log(`Sidebar student action clicked: ${actionName}`);
+      }
+    } else if (type === "admin") {
+      if (actionName === "Quản lý đặt chỗ") {
+        navigate('/xem-ds-phong');
+      } else if (actionName === "Báo cáo" || actionName === "Thống kê & báo cáo") {
+        navigate('/xem-bao-cao');
+      } else {
+        console.log(`Sidebar admin action clicked: ${actionName}`);
+      }
     }
+
     setIsOpen(false);
   };
 
   const studentActions = [
     "Đặt chỗ học",
     "Check in & Check out",
-    "Tìm kiếm",
     "Lịch sử đặt chỗ",
     "Đánh giá & phản hồi",
   ];
+
   const adminActions = [
     "Quản lý đặt chỗ",
-    "Quản lý không gian",
-    "Thống kê & báo cáo",
-    "Quản lý phân hội",
+    // "Quản lý không gian",
+    "Báo cáo",
+    // "Quản lý phân hội",
   ];
 
   return (

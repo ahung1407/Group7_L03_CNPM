@@ -4,7 +4,6 @@ const QuickActions = ({ type }) => {
   const studentActions = [
     "Đặt chỗ học",
     "Check in & Check out",
-    "Tìm kiếm",
     "Lịch sử đặt chỗ",
     "Đánh giá & phản hồi",
   ];
